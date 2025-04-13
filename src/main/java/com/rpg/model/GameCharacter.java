@@ -21,7 +21,7 @@ public class GameCharacter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome é obrigatório")
+    @NotBlank(message = "O nome do personagem é obrigatório")
     private String name;
 
     @NotBlank(message = "O nome de aventureiro é obrigatório")
@@ -66,11 +66,15 @@ public class GameCharacter {
     }
 
     public int getTotalStrength() {
-        return baseStrength + magicalItems.stream().mapToInt(MagicalItem::getStrength).sum();
+        return baseStrength + magicalItems.stream()
+                .mapToInt(MagicalItem::getStrength)
+                .sum();
     }
 
     public int getTotalDefense() {
-        return baseDefense + magicalItems.stream().mapToInt(MagicalItem::getDefense).sum();
+        return baseDefense + magicalItems.stream()
+                .mapToInt(MagicalItem::getDefense)
+                .sum();
     }
 
     public void addMagicalItem(MagicalItem item) {

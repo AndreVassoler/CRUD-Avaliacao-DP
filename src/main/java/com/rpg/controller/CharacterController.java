@@ -154,4 +154,24 @@ public class CharacterController {
         MagicalItem amulet = characterService.getCharacterAmulet(characterId);
         return amulet != null ? ResponseEntity.ok(amulet) : ResponseEntity.notFound().build();
     }
+
+    @PatchMapping("/{id}/adventurer-name")
+    public ResponseEntity<?> updateAdventurerName(
+            @PathVariable(name = "id") Long id,
+            @RequestBody String newAdventurerName) {
+        try {
+            if (id == null || id <= 0) {
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "ID do personagem inválido");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            GameCharacter updated = characterService.updateAdventurerName(id, newAdventurerName);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Personagem não encontrado com ID: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
 } 

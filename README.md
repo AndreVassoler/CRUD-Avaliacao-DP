@@ -1,6 +1,6 @@
-# RPG Management API
+# API de Gerenciamento de RPG
 
-API para gerenciamento de personagens e itens mágicos em um sistema de RPG.
+API para gerenciamento de personagens e itens mágicos de RPG.
 
 ## Endpoints
 
@@ -9,123 +9,163 @@ API para gerenciamento de personagens e itens mágicos em um sistema de RPG.
 #### Criar Personagem
 ```http
 POST /api/characters
-Content-Type: application/json
-
+```
+```json
 {
-    "name": "Gandalf",
-    "adventurerName": "O Cinzento",
-    "characterClass": "GUERREIRO",
+    "name": "Merlin",
+    "adventurerName": "O Sábio",
     "level": 1,
     "baseStrength": 5,
-    "baseDefense": 5,
-    "magicalItems": []
+    "baseDefense": 5
 }
 ```
+**Regras:**
+- Nome e nome de aventureiro são obrigatórios
+- Nível mínimo é 1
+- A soma de força e defesa base deve ser 10
+- Força e defesa base devem estar entre 0 e 10
 
-**Respostas:**
-- 201 Created: Personagem criado com sucesso
-- 400 Bad Request: Dados inválidos
+#### Listar Personagens
+```http
+GET /api/characters
+```
 
-#### Buscar Personagem
+#### Buscar Personagem por ID
 ```http
 GET /api/characters/{id}
 ```
 
-**Respostas:**
-- 200 OK: Personagem encontrado
-- 404 Not Found: Personagem não encontrado
-- 400 Bad Request: ID inválido
+#### Atualizar Nome de Aventureiro
+```http
+PUT /api/characters/{id}/adventurer-name
+```
+```json
+{
+    "adventurerName": "Novo Nome"
+}
+```
 
-#### Remover Personagem
+#### Deletar Personagem
 ```http
 DELETE /api/characters/{id}
 ```
 
-**Respostas:**
-- 204 No Content: Personagem removido com sucesso
-- 404 Not Found: Personagem não encontrado
-- 400 Bad Request: ID inválido
-
 ### Itens Mágicos
 
-#### Adicionar Item Mágico
+#### Adicionar Item Mágico ao Personagem
 ```http
 POST /api/characters/{characterId}/items
-Content-Type: application/json
+```
 
-# Exemplo de Arma
+**Exemplos de JSON por tipo de item:**
+
+Arma:
+```json
 {
-    "name": "Espada Mágica",
+    "name": "Espada Flamejante",
     "type": "ARMA",
-    "strength": 5,
+    "strength": 7,
     "defense": 0
 }
+```
 
-# Exemplo de Armadura
+Armadura:
+```json
 {
-    "name": "Armadura Encantada",
+    "name": "Armadura de Diamante",
     "type": "ARMADURA",
     "strength": 0,
+    "defense": 8
+}
+```
+
+Amuleto:
+```json
+{
+    "name": "Amuleto da Sabedoria",
+    "type": "AMULETO",
+    "strength": 5,
     "defense": 5
 }
-
-# Exemplo de Amuleto
-{
-    "name": "Amuleto do Poder",
-    "type": "AMULETO",
-    "strength": 3,
-    "defense": 2
-}
 ```
 
-**Respostas:**
-- 201 Created: Item adicionado com sucesso
-- 404 Not Found: Personagem não encontrado
-- 400 Bad Request: Dados do item inválidos
-
-#### Remover Item Mágico
-```http
-DELETE /api/characters/{characterId}/items/{itemId}
-```
-
-**Respostas:**
-- 204 No Content: Item removido com sucesso
-- 404 Not Found: Personagem ou item não encontrado
-- 400 Bad Request: ID inválido
-
-#### Listar Itens Mágicos
+#### Listar Itens do Personagem
 ```http
 GET /api/characters/{characterId}/items
 ```
 
-**Respostas:**
-- 200 OK: Lista de itens retornada com sucesso
-- 404 Not Found: Personagem não encontrado
-- 400 Bad Request: ID inválido
-
-#### Buscar Amuleto
+#### Remover Item do Personagem
 ```http
-GET /api/characters/{characterId}/amulet
+DELETE /api/characters/{characterId}/items/{itemId}
 ```
-
-**Respostas:**
-- 200 OK: Amuleto encontrado
-- 404 Not Found: Personagem não encontrado ou não possui amuleto
 
 ## Regras de Negócio
 
 ### Personagens
-- O nome e nome de aventureiro são obrigatórios
-- A classe deve ser uma das seguintes: GUERREIRO, MAGO, ARQUEIRO, LADINO, BARDO
-- O nível mínimo é 1
-- A força e defesa base devem estar entre 0 e 10
-- A soma da força e defesa base deve ser 10
+- Nome e nome de aventureiro são obrigatórios
+- Nível mínimo é 1
+- A soma de força e defesa base deve ser exatamente 10
+- Força e defesa base devem estar entre 0 e 10
 
 ### Itens Mágicos
-- O nome é obrigatório
-- O tipo deve ser: ARMA, ARMADURA ou AMULETO
-- A força e defesa devem estar entre 0 e 10
-- Armas devem ter defesa = 0
-- Armaduras devem ter força = 0
-- Amuletos podem ter tanto força quanto defesa
-- Um personagem só pode ter um amuleto por vez 
+
+#### Tipos de Item
+Os itens mágicos podem ser apenas dos seguintes tipos:
+- ARMA
+- ARMADURA
+- AMULETO
+
+#### Regras por Tipo de Item
+
+**ARMA:**
+- Defesa OBRIGATORIAMENTE zero
+- Força deve ser maior que zero
+- Força máxima 10
+
+**ARMADURA:**
+- Força OBRIGATORIAMENTE zero
+- Defesa deve ser maior que zero
+- Defesa máxima 10
+
+**AMULETO:**
+- Pode ter tanto força quanto defesa
+- Não pode ter força E defesa igual a zero
+- Força e defesa máximas 10
+- Um personagem só pode ter UM amuleto equipado por vez
+
+#### Regras Gerais de Itens
+- Não podem existir itens com zero de defesa E zero de força
+- Força e defesa devem estar entre 0 e 10
+- Um item não pode estar equipado em mais de um personagem ao mesmo tempo
+- O mesmo item não pode ser equipado duas vezes no mesmo personagem
+
+## Códigos de Resposta
+
+- 200: Sucesso
+- 201: Criado com sucesso
+- 400: Erro de validação
+- 404: Recurso não encontrado
+- 500: Erro interno do servidor
+
+## Exemplos de Erros
+
+### Tentativa de adicionar segundo amuleto
+```json
+{
+    "error": "O personagem já possui um amuleto equipado"
+}
+```
+
+### Tentativa de criar arma com defesa
+```json
+{
+    "error": "Itens do tipo ARMA devem ter defesa igual a zero"
+}
+```
+
+### Tentativa de equipar item já equipado
+```json
+{
+    "error": "Este item já está equipado em outro personagem"
+}
+``` 
